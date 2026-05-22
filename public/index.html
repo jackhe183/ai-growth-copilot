@@ -35,6 +35,9 @@
         <button id="analyzeBtn" disabled>
           开始分析
         </button>
+        <button id="streamBtn" disabled class="stream-btn">
+          🚀 流式分析
+        </button>
       </section>
 
       <!-- Trace 展示区 -->
@@ -55,6 +58,7 @@
     const leadList = document.getElementById('leadList');
     const customInput = document.getElementById('customInput');
     const analyzeBtn = document.getElementById('analyzeBtn');
+    const streamBtn = document.getElementById('streamBtn');
     const traceSection = document.getElementById('traceSection');
     const traceTimeline = document.getElementById('traceTimeline');
     const resultSection = document.getElementById('resultSection');
@@ -100,7 +104,9 @@
       });
 
       analyzeBtn.disabled = false;
+      streamBtn.disabled = false;
       analyzeBtn.textContent = '分析选中线索';
+      streamBtn.textContent = '流式分析';
     }
 
     customInput.addEventListener('input', () => {
@@ -110,14 +116,19 @@
           card.classList.remove('selected');
         });
         analyzeBtn.disabled = false;
+        streamBtn.disabled = false;
         analyzeBtn.textContent = '分析输入内容';
+        streamBtn.textContent = '流式分析';
       } else if (!selectedLeadId) {
         analyzeBtn.disabled = true;
+        streamBtn.disabled = true;
       }
     });
 
     analyzeBtn.addEventListener('click', analyze);
+    streamBtn.addEventListener('click', streamAnalyze);
 
+    // 普通分析模式
     async function analyze() {
       const payload = selectedLeadId
         ? { leadId: selectedLeadId }
@@ -127,6 +138,7 @@
       resultSection.style.display = 'none';
       traceTimeline.innerHTML = '<div class="trace-status">⏳ 正在分析，请稍候...</div>';
       analyzeBtn.disabled = true;
+      streamBtn.disabled = true;
       analyzeBtn.textContent = '分析中...';
 
       try {
@@ -165,22 +177,105 @@
       }
 
       analyzeBtn.disabled = false;
+      streamBtn.disabled = false;
       analyzeBtn.textContent = selectedLeadId ? '分析选中线索' : '分析输入内容';
+    }
+
+    // 流式分析模式
+    async function streamAnalyze() {
+      const payload = selectedLeadId
+        ? { leadId: selectedLeadId }
+        : { customInput: customInput.value };
+
+      traceSection.style.display = 'block';
+      resultSection.style.display = 'block';
+      traceTimeline.innerHTML = '<div class="trace-status">🚀 流式分析中...</div>';
+      resultContent.innerHTML = '';
+      analyzeBtn.disabled = true;
+      streamBtn.disabled = true;
+      analyzeBtn.textContent = '分析中...';
+      streamBtn.textContent = '流式分析中...';
+
+      try {
+        const res = await fetch('/api/analyze-stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const text = decoder.decode(value, { stream: true });
+          buffer += text;
+
+          // 处理 SSE 数据
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const event = JSON.parse(line.slice(6));
+                handleStreamEvent(event);
+              } catch (e) {
+                // 忽略解析错误
+              }
+            }
+          }
+        }
+      } catch (err) {
+        traceTimeline.innerHTML += `<div class="trace-error">❌ 网络错误: ${err.message}</div>`;
+      }
+
+      analyzeBtn.disabled = false;
+      streamBtn.disabled = false;
+      analyzeBtn.textContent = selectedLeadId ? '分析选中线索' : '分析输入内容';
+      streamBtn.textContent = '流式分析';
+    }
+
+    function handleStreamEvent(event) {
+      switch (event.type) {
+        case 'step':
+          const step = event.step;
+          const stepHtml = `
+            <div class="trace-step">
+              <div class="step-header">Step ${step.step}</div>
+              ${step.thought ? `<div class="step-thought">🤔 ${step.thought}</div>` : ''}
+              ${step.action ? `<div class="step-action">🔧 ${step.action.tool}: ${truncate(step.action.input, 80)}</div>` : ''}
+              ${step.observation ? `<div class="step-observation">📋 ${truncate(step.observation, 200)}</div>` : ''}
+              ${step.error ? `<div class="step-error">❌ ${step.error}</div>` : ''}
+              ${step.final ? `<div class="step-final">✅ 分析完成</div>` : ''}
+            </div>
+          `;
+          traceTimeline.innerHTML += stepHtml;
+          break;
+
+        case 'token':
+          resultContent.innerHTML += escapeHtml(event.token);
+          break;
+
+        case 'error':
+          traceTimeline.innerHTML += `<div class="trace-error">❌ 错误: ${event.message}</div>`;
+          break;
+      }
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     }
 
     function truncate(str, maxLen) {
       if (!str) return '';
       if (str.length <= maxLen) return str;
       return str.slice(0, maxLen) + '...';
-    }
-
-    function formatMarkdown(text) {
-      return text
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/^- \*\*(.+?)\*\*(.+)$/gm, '<li><strong>$1</strong>$2</li>')
-        .replace(/^- (.+)$/gm, '<li>$1</li>')
-        .replace(/\n/g, '<br>');
     }
 
     loadLeads();

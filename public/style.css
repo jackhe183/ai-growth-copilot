@@ -146,6 +146,9 @@ textarea:focus {
 
 .actions {
   text-align: center;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
 }
 
 button {
@@ -167,6 +170,10 @@ button:hover:not(:disabled) {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.stream-btn {
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
 }
 
 .trace-timeline {

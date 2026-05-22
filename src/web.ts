@@ -1,4 +1,4 @@
-import { runAgent } from './loop.ts';
+import { runAgent, runAgentStream } from './loop.ts';
 import type { TraceStep } from './types.ts';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -98,6 +98,55 @@ async function handleRequest(req: Request): Promise<Response> {
     return Response.json({
       steps,
       result: result.final,
+    });
+  }
+
+  // API: 流式分析线索 (SSE)
+  if (url.pathname === '/api/analyze-stream' && req.method === 'POST') {
+    const { leadId, customInput } = await req.json();
+
+    let task = customInput;
+
+    // 如果是 lead ID，构建任务
+    if (leadId && !customInput) {
+      const leads = getLeads();
+      const lead = leads.find(l => l.id === leadId);
+      if (lead) {
+        task = buildTaskFromLead(lead);
+      } else {
+        return Response.json({ error: '未找到线索' }, { status: 404 });
+      }
+    }
+
+    const encoder = new TextEncoder();
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        const sendEvent = (data: object) => {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        };
+
+        try {
+          for await (const event of runAgentStream(task)) {
+            sendEvent(event);
+          }
+        } catch (error) {
+          sendEvent({
+            type: 'error',
+            message: error instanceof Error ? error.message : String(error),
+          });
+        }
+
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
   }
 
