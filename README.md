@@ -10,6 +10,7 @@
 - **方案推荐**：基于产品目录匹配合适方案，引用真实数据
 - **话术生成**：基于销售 SOP 生成标准跟进话术
 - **执行 Trace**：展示完整 ReAct 执行过程，可审计可追溯
+- **流式输出**：支持实时流式输出，边推理边展示结果
 
 ## 快速开始
 
@@ -51,9 +52,18 @@ bun run src/index.ts --list
 # 分析指定线索（显示 Trace）
 bun run src/index.ts --trace lead_001
 
+# 流式输出模式（实时展示推理过程）
+bun run src/index.ts --stream lead_001
+
 # 直接输入线索内容
 bun run src/index.ts "客户留言：我们想了解AI客服方案..."
 ```
+
+**CLI 流式输出颜色区分**：
+- 🟡 黄色 = 思考 (thought)
+- 🔵 蓝色 = 执行 (action)
+- 🟢 绿色 = 观察 (observation)
+- ⚪ 白色 = Token 输出（逐字显示）
 
 ### Web 模式
 
@@ -61,7 +71,7 @@ bun run src/index.ts "客户留言：我们想了解AI客服方案..."
 bun run src/web
 ```
 
-访问 http://localhost:3000，可视化选择线索、查看 Trace、分析结果。
+访问 http://localhost:3000，可视化选择线索、查看 Trace、分析结果。支持"流式分析"按钮，实时展示推理过程。
 
 ## 项目结构
 
