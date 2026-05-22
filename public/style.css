@@ -1,0 +1,288 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+section h2 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.lead-selector .lead-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lead-card {
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lead-card:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+}
+
+.lead-card.selected {
+  border-color: #667eea;
+  background: #f0f0ff;
+}
+
+.lead-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.lead-id {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #667eea;
+  font-weight: bold;
+}
+
+.lead-source {
+  font-size: 0.75rem;
+  color: #666;
+  background: #e9ecef;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.lead-company {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.lead-meta {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.divider {
+  text-align: center;
+  color: #999;
+  margin: 16px 0;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #ddd;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.actions {
+  text-align: center;
+}
+
+button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.trace-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trace-status {
+  color: #666;
+  font-style: italic;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.trace-lead {
+  padding: 12px;
+  background: #e8f4ff;
+  border-radius: 6px;
+  color: #333;
+}
+
+.trace-step {
+  border-left: 3px solid #667eea;
+  padding-left: 16px;
+  padding-bottom: 12px;
+  position: relative;
+}
+
+.trace-step::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  background: #667eea;
+  border-radius: 50%;
+}
+
+.step-header {
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.step-thought {
+  background: #fff3cd;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.step-action {
+  background: #e8f4ff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.step-observation {
+  background: #d4edda;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: #155724;
+}
+
+.step-error {
+  background: #f8d7da;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: #721c24;
+}
+
+.result-content {
+  line-height: 1.8;
+}
+
+.result-content h2 {
+  color: #667eea;
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+.result-content h3 {
+  color: #764ba2;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.result-content li {
+  margin-bottom: 8px;
+  padding-left: 8px;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.error {
+  color: #dc3545;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .lead-list {
+    grid-template-columns: 1fr;
+  }
+}

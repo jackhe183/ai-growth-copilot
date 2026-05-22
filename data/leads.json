@@ -1,0 +1,47 @@
+[
+  {
+    "id": "lead_001",
+    "source": "官网表单",
+    "company": "某制造业企业",
+    "industry": "制造业",
+    "interested_product": "AI 客服解决方案",
+    "customer_message": "我们想了解你们的 AI 客服方案，主要想降低售后咨询压力，最好能先做一个小范围试点。我们现在有 FAQ 和历史客服记录，希望一个月内看到 Demo。",
+    "sales_notes": "客户暂未提供预算，也没有说明当前使用的客服系统。",
+    "contact": {
+      "name": "张经理",
+      "title": "售后主管",
+      "phone": "138****8888",
+      "email": "zhang@company.com"
+    }
+  },
+  {
+    "id": "lead_002",
+    "source": "活动报名",
+    "company": "北京某科技公司",
+    "industry": "科技",
+    "interested_product": "企业知识库解决方案",
+    "customer_message": "参加你们在深圳 AI 大会的分享后很感兴趣，我们内部有很多产品文档和培训资料，想做智能化管理和问答。",
+    "sales_notes": "客户规模约 200 人，有明确需求，但未透露预算范围。",
+    "contact": {
+      "name": "李总监",
+      "title": "IT 总监",
+      "phone": "139****6666",
+      "email": "li@tech.com"
+    }
+  },
+  {
+    "id": "lead_003",
+    "source": "社媒私信",
+    "company": "上海某电商公司",
+    "industry": "电商",
+    "interested_product": "AI 智能客服 + 工单系统",
+    "customer_message": "双十一马上到了，客服压力很大，想了解一下你们的 AI 客服能不能快速接入，预期 2 周内上线。",
+    "sales_notes": "时间紧迫，但未说明现有系统情况。",
+    "contact": {
+      "name": "王运营",
+      "title": "运营经理",
+      "phone": "136****5555",
+      "email": "wang@ecommerce.com"
+    }
+  }
+]

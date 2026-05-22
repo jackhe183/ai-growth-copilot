@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Growth Copilot - 线索评分助手</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎯 AI Growth Copilot</h1>
+      <p>营销线索智能分析助手</p>
+    </header>
+
+    <main>
+      <!-- 线索选择区 -->
+      <section class="lead-selector">
+        <h2>选择线索</h2>
+        <div class="lead-list" id="leadList">
+          <div class="loading">加载中...</div>
+        </div>
+        <div class="divider">
+          <span>或</span>
+        </div>
+        <textarea
+          id="customInput"
+          placeholder="直接输入线索内容进行分析..."
+          rows="4"
+        ></textarea>
+      </section>
+
+      <!-- 分析按钮 -->
+      <section class="actions">
+        <button id="analyzeBtn" disabled>
+          开始分析
+        </button>
+      </section>
+
+      <!-- Trace 展示区 -->
+      <section class="trace-section" id="traceSection" style="display: none;">
+        <h2>🔄 执行过程 Trace</h2>
+        <div class="trace-timeline" id="traceTimeline"></div>
+      </section>
+
+      <!-- 分析结果区 -->
+      <section class="result-section" id="resultSection" style="display: none;">
+        <h2>📊 分析结果</h2>
+        <div class="result-content" id="resultContent"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const leadList = document.getElementById('leadList');
+    const customInput = document.getElementById('customInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const traceSection = document.getElementById('traceSection');
+    const traceTimeline = document.getElementById('traceTimeline');
+    const resultSection = document.getElementById('resultSection');
+    const resultContent = document.getElementById('resultContent');
+
+    let selectedLeadId = null;
+
+    // 加载线索列表
+    async function loadLeads() {
+      try {
+        const res = await fetch('/api/leads');
+        const leads = await res.json();
+
+        leadList.innerHTML = leads.map(lead => `
+          <div class="lead-card" data-id="${lead.id}">
+            <div class="lead-header">
+              <span class="lead-id">${lead.id}</span>
+              <span class="lead-source">${lead.source}</span>
+            </div>
+            <div class="lead-company">${lead.company}</div>
+            <div class="lead-meta">
+              <span>${lead.industry}</span>
+              <span>•</span>
+              <span>${lead.interested_product}</span>
+            </div>
+          </div>
+        `).join('');
+
+        document.querySelectorAll('.lead-card').forEach(card => {
+          card.addEventListener('click', () => selectLead(card.dataset.id));
+        });
+      } catch (err) {
+        leadList.innerHTML = '<div class="error">加载线索失败</div>';
+      }
+    }
+
+    function selectLead(id) {
+      selectedLeadId = id;
+      customInput.value = '';
+
+      document.querySelectorAll('.lead-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.id === id);
+      });
+
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = '分析选中线索';
+    }
+
+    customInput.addEventListener('input', () => {
+      if (customInput.value.trim()) {
+        selectedLeadId = null;
+        document.querySelectorAll('.lead-card').forEach(card => {
+          card.classList.remove('selected');
+        });
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = '分析输入内容';
+      } else if (!selectedLeadId) {
+        analyzeBtn.disabled = true;
+      }
+    });
+
+    analyzeBtn.addEventListener('click', analyze);
+
+    async function analyze() {
+      const payload = selectedLeadId
+        ? { leadId: selectedLeadId }
+        : { customInput: customInput.value };
+
+      traceSection.style.display = 'block';
+      resultSection.style.display = 'none';
+      traceTimeline.innerHTML = '<div class="trace-status">⏳ 正在分析，请稍候...</div>';
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = '分析中...';
+
+      try {
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          traceTimeline.innerHTML += `<div class="trace-error">❌ 错误: ${data.error}</div>`;
+        } else {
+          // 渲染 Steps
+          traceTimeline.innerHTML = '';
+          data.steps.forEach(step => {
+            const stepHtml = `
+              <div class="trace-step">
+                <div class="step-header">Step ${step.step}</div>
+                ${step.thought ? `<div class="step-thought">🤔 ${step.thought}</div>` : ''}
+                ${step.action ? `<div class="step-action">🔧 ${step.action.tool}: ${truncate(step.action.input, 80)}</div>` : ''}
+                ${step.observation ? `<div class="step-observation">📋 ${truncate(step.observation, 200)}</div>` : ''}
+                ${step.error ? `<div class="step-error">❌ ${step.error}</div>` : ''}
+              </div>
+            `;
+            traceTimeline.innerHTML += stepHtml;
+          });
+
+          // 渲染结果
+          resultSection.style.display = 'block';
+          resultContent.innerHTML = formatMarkdown(data.result);
+        }
+      } catch (err) {
+        traceTimeline.innerHTML += `<div class="trace-error">❌ 网络错误: ${err.message}</div>`;
+      }
+
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = selectedLeadId ? '分析选中线索' : '分析输入内容';
+    }
+
+    function truncate(str, maxLen) {
+      if (!str) return '';
+      if (str.length <= maxLen) return str;
+      return str.slice(0, maxLen) + '...';
+    }
+
+    function formatMarkdown(text) {
+      return text
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^- \*\*(.+?)\*\*(.+)$/gm, '<li><strong>$1</strong>$2</li>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/\n/g, '<br>');
+    }
+
+    loadLeads();
+  </script>
+</body>
+</html>

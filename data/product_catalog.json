@@ -1,0 +1,107 @@
+{
+  "products": [
+    {
+      "id": "ai_customer_service",
+      "name": "AI 智能客服解决方案",
+      "description": "基于大模型的智能客服系统，支持 FAQ 问答、工单转接、人工复核全流程",
+      "features": [
+        "多渠道接入：官网、APP、微信公众号、企业微信",
+        "FAQ 智能问答：基于产品知识库精准回答",
+        "意图识别：自动识别客户咨询意图并分类",
+        "人工复核：复杂问题无缝转接人工",
+        "数据洞察：提供咨询热点分析和满意度统计"
+      ],
+      "pricing": {
+        "min": 5,
+        "unit": "万元/年",
+        "note": "按坐席数量阶梯计价，具体报价需根据企业规模定制"
+      },
+      "implementation": {
+        "min_days": 14,
+        "max_days": 30,
+        "process": "需求调研 → 知识库梳理 → 系统配置 → 测试培训 → 正式上线",
+        "pilot_available": true,
+        "pilot_desc": "支持小范围试点，试点周期 2 周"
+      },
+      "requirements": [
+        "需提供产品相关 FAQ 文档或历史客服记录",
+        "需明确接入渠道和现有系统情况",
+        "试点期间需安排专人配合"
+      ]
+    },
+    {
+      "id": "enterprise_knowledge_base",
+      "name": "企业知识库解决方案",
+      "description": "帮助企业构建智能化内部知识管理系统，支持文档分类、搜索问答、培训辅助",
+      "features": [
+        "文档智能分类：自动识别和标签化文档内容",
+        "智能搜索：基于语义理解的精准搜索",
+        "问答助手：员工自助查询常见问题",
+        "权限管理：灵活的文档访问权限控制",
+        "培训辅助：自动生成培训测试题"
+      ],
+      "pricing": {
+        "min": 8,
+        "unit": "万元/年",
+        "note": "包含首年知识库梳理服务，后续按年收取维护费"
+      },
+      "implementation": {
+        "min_days": 21,
+        "max_days": 45,
+        "process": "现状调研 → 知识体系设计 → 文档梳理 → 系统搭建 → 试运行",
+        "pilot_available": true,
+        "pilot_desc": "可先进行知识库诊断和规划"
+      },
+      "requirements": [
+        "需明确知识库覆盖范围",
+        "需安排知识贡献者参与文档梳理",
+        "建议先进行小范围试点"
+      ]
+    },
+    {
+      "id": "ai_workflow",
+      "name": "AI 工单智能流转系统",
+      "description": "智能化工单管理系统，支持 AI 预处理、自动分配、进度追踪",
+      "features": [
+        "AI 预处理：自动提取工单关键信息并进行分类",
+        "智能分配：根据类型和难度自动分配给对应人员",
+        "进度追踪：全程可视化追踪处理进度",
+        "超时预警：自动提醒即将超时的工单",
+        "数据分析：提供工单处理效率分析报表"
+      ],
+      "pricing": {
+        "min": 6,
+        "unit": "万元/年",
+        "note": "按工单量阶梯计价"
+      },
+      "implementation": {
+        "min_days": 14,
+        "max_days": 21,
+        "process": "流程梳理 → 系统配置 → 数据迁移 → 培训上线",
+        "pilot_available": false,
+        "pilot_desc": "暂不支持试点，需整体部署"
+      },
+      "requirements": [
+        "需梳理现有工单处理流程",
+        "需明确工单类型和分类标准"
+      ]
+    }
+  ],
+  "common_use_cases": [
+    {
+      "industry": "制造业",
+      "pain_points": ["售后服务咨询量大", "FAQ 更换频繁", "人工客服成本高"],
+      "recommended": ["ai_customer_service"]
+    },
+    {
+      "industry": "电商",
+      "pain_points": ["促销季咨询峰值", "订单问题处理效率", "客户满意度追踪"],
+      "recommended": ["ai_customer_service", "ai_workflow"]
+    },
+    {
+      "industry": "科技",
+      "pain_points": ["内部知识分散", "培训成本高", "技术文档维护难"],
+      "recommended": ["enterprise_knowledge_base"]
+    }
+  ]
+}

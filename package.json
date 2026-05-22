@@ -1,0 +1,10 @@
+{
+  "name": "ai-growth-copilot",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts",
+    "web": "bun run src/web.ts"
+  }
+}
